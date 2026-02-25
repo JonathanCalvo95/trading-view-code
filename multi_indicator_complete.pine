@@ -1,599 +1,479 @@
-//= 23EMAs + Koncorde + RSI + MACD [Dylan Argot]
+// 23EMAs + Koncorde + RSI + MACD [Dylan Argot]
 //@version=6
 indicator('23EMAs + Koncorde + RSI + MACD [Dylan Argot]', overlay=false)
-Mostrar_T = input.bool(true, 'Mostrar Performance', group='Cuadro de Performance')
-infoTable = input.bool(true, 'Mostrar Tabla de datos Diaria', group='Tabla de datos')
-InfoTable = input.bool(true, 'Mostrar Tabla de datos Semanal', group='Tabla de datos')
-InfoTableT = input.bool(true, 'Mostrar Tabla de datos Mensual', group='Tabla de datos')
 
-// ====== Función genérica de Media Móvil ======
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║                        INPUTS GENERALES                              ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+
+// --- Visibilidad ---
+showPerformance = input.bool(true, 'Mostrar Performance', group='Cuadro de Performance')
+showTablaD      = input.bool(true, 'Mostrar Tabla Diaria', group='Tabla de datos')
+showTablaS      = input.bool(true, 'Mostrar Tabla Semanal', group='Tabla de datos')
+showTablaM      = input.bool(true, 'Mostrar Tabla Mensual', group='Tabla de datos')
+showKoncorde    = input.bool(true, 'KONCORDE VISIBLE', group='Indicadores')
+showRSI         = input.bool(true, 'RSI VISIBLE', group='Indicadores')
+showMACD        = input.bool(true, 'MACD VISIBLE', group='Indicadores')
+
+// --- Medias Móviles Diarias ---
+GRP_D = 'Medias Moviles Diarias'
+showD1 = input.bool(true, title='', group=GRP_D, inline='a')
+tipoD1 = input.string('SMA', title='Media 1', inline='a', group=GRP_D, options=['SMA','EMA','WMA','RMA'])
+lenD1  = input.int(21,  'De', inline='a', group=GRP_D)
+colD1  = input.color(color.blue,   'Color', inline='a', group=GRP_D)
+
+showD2 = input.bool(true, title='', group=GRP_D, inline='b')
+tipoD2 = input.string('SMA', title='Media 2', inline='b', group=GRP_D, options=['SMA','EMA','WMA','RMA'])
+lenD2  = input.int(30,  'De', inline='b', group=GRP_D)
+colD2  = input.color(color.green,  'Color', inline='b', group=GRP_D)
+
+showD3 = input.bool(true, title='', group=GRP_D, inline='c')
+tipoD3 = input.string('SMA', title='Media 3', inline='c', group=GRP_D, options=['SMA','EMA','WMA','RMA'])
+lenD3  = input.int(100, 'De', inline='c', group=GRP_D)
+colD3  = input.color(color.yellow, 'Color', inline='c', group=GRP_D)
+
+showD4 = input.bool(true, title='', group=GRP_D, inline='d')
+tipoD4 = input.string('EMA', title='Media 4', inline='d', group=GRP_D, options=['SMA','EMA','WMA','RMA'])
+lenD4  = input.int(150, 'De', inline='d', group=GRP_D)
+colD4  = input.color(color.orange, 'Color', inline='d', group=GRP_D)
+
+showD5 = input.bool(true, title='', group=GRP_D, inline='e')
+tipoD5 = input.string('EMA', title='Media 5', inline='e', group=GRP_D, options=['SMA','EMA','WMA','RMA'])
+lenD5  = input.int(200, 'De', inline='e', group=GRP_D)
+colD5  = input.color(color.red,    'Color', inline='e', group=GRP_D)
+
+fillD_alcista = input.color(#4caf4f4c, title='Color cuando MM1 > MM2', group=GRP_D)
+fillD_bajista = input.color(#ff52524d, title='Color cuando MM2 > MM1', group=GRP_D)
+
+// --- Medias Móviles Semanales ---
+GRP_S = 'Medias Moviles Semanales'
+showS1 = input.bool(true, title='', group=GRP_S, inline='j')
+tipoS1 = input.string('EMA', title='Media 1', inline='j', group=GRP_S, options=['SMA','EMA','WMA','RMA'])
+lenS1  = input.int(10,  'De', inline='j', group=GRP_S)
+colS1  = input.color(color.blue,   'Color', inline='j', group=GRP_S)
+
+showS2 = input.bool(true, title='', group=GRP_S, inline='k')
+tipoS2 = input.string('EMA', title='Media 2', inline='k', group=GRP_S, options=['SMA','EMA','WMA','RMA'])
+lenS2  = input.int(20,  'De', inline='k', group=GRP_S)
+colS2  = input.color(color.green,  'Color', inline='k', group=GRP_S)
+
+showS3 = input.bool(true, title='', group=GRP_S, inline='l')
+tipoS3 = input.string('EMA', title='Media 3', inline='l', group=GRP_S, options=['SMA','EMA','WMA','RMA'])
+lenS3  = input.int(30,  'De', inline='l', group=GRP_S)
+colS3  = input.color(color.yellow, 'Color', inline='l', group=GRP_S)
+
+showS4 = input.bool(true, title='', group=GRP_S, inline='m')
+tipoS4 = input.string('EMA', title='Media 4', inline='m', group=GRP_S, options=['SMA','EMA','WMA','RMA'])
+lenS4  = input.int(50,  'De', inline='m', group=GRP_S)
+colS4  = input.color(color.orange, 'Color', inline='m', group=GRP_S)
+
+showS5 = input.bool(true, title='', group=GRP_S, inline='n')
+tipoS5 = input.string('EMA', title='Media 5', inline='n', group=GRP_S, options=['SMA','EMA','WMA','RMA'])
+lenS5  = input.int(200, 'De', inline='n', group=GRP_S)
+colS5  = input.color(color.red,    'Color', inline='n', group=GRP_S)
+
+showS6 = input.bool(true, title='', group=GRP_S, inline='o')
+tipoS6 = input.string('SMA', title='Media 6', inline='o', group=GRP_S, options=['SMA','EMA','WMA','RMA'])
+lenS6  = input.int(200, 'De', inline='o', group=GRP_S)
+colS6  = input.color(color.purple, 'Color', inline='o', group=GRP_S)
+
+fillS_alcista = input.color(#4caf4f4c, title='Color cuando MM1 > MM2', group=GRP_S)
+fillS_bajista = input.color(#ff52524d, title='Color cuando MM2 > MM1', group=GRP_S)
+
+// --- Medias Móviles Mensuales ---
+GRP_M = 'Medias Moviles Mensuales'
+showM1 = input.bool(true, title='', group=GRP_M, inline='a')
+tipoM1 = input.string('EMA', title='Media 1', inline='a', group=GRP_M, options=['SMA','EMA','WMA','RMA'])
+lenM1  = input.int(10,  'De', inline='a', group=GRP_M)
+colM1  = input.color(color.blue,   'Color', inline='a', group=GRP_M)
+
+showM2 = input.bool(true, title='', group=GRP_M, inline='b')
+tipoM2 = input.string('EMA', title='Media 2', inline='b', group=GRP_M, options=['SMA','EMA','WMA','RMA'])
+lenM2  = input.int(20,  'De', inline='b', group=GRP_M)
+colM2  = input.color(color.green,  'Color', inline='b', group=GRP_M)
+
+showM3 = input.bool(true, title='', group=GRP_M, inline='c')
+tipoM3 = input.string('EMA', title='Media 3', inline='c', group=GRP_M, options=['SMA','EMA','WMA','RMA'])
+lenM3  = input.int(30,  'De', inline='c', group=GRP_M)
+colM3  = input.color(color.yellow, 'Color', inline='c', group=GRP_M)
+
+showM4 = input.bool(true, title='', group=GRP_M, inline='d')
+tipoM4 = input.string('EMA', title='Media 4', inline='d', group=GRP_M, options=['SMA','EMA','WMA','RMA'])
+lenM4  = input.int(40,  'De', inline='d', group=GRP_M)
+colM4  = input.color(color.orange, 'Color', inline='d', group=GRP_M)
+
+showM5 = input.bool(true, title='', group=GRP_M, inline='e')
+tipoM5 = input.string('EMA', title='Media 5', inline='e', group=GRP_M, options=['SMA','EMA','WMA','RMA'])
+lenM5  = input.int(200, 'De', inline='e', group=GRP_M)
+colM5  = input.color(color.red,    'Color', inline='e', group=GRP_M)
+
+// --- RSI ---
+GRP_RSI = 'RSI'
+rsiLenTabla = input.int(14, title='Longitud RSI (Tabla)', group=GRP_RSI)
+rsiLenPlot  = input.int(9,  minval=1, title='Longitud RSI (Gráfico)', group=GRP_RSI)
+rsiMALen    = input.int(21, title='Media RSI', group=GRP_RSI)
+
+// --- MACD ---
+GRP_MACD = 'MACD'
+macdFastLen   = input.int(12, title='Longitud Media Rápida', group=GRP_MACD)
+macdSlowLen   = input.int(26, title='Longitud Media Lenta', group=GRP_MACD)
+macdSignalLen = input.int(9,  title='Longitud Suavizado', minval=1, maxval=50, group=GRP_MACD)
+
+
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║                     FUNCIONES AUXILIARES                             ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+
+// Media Móvil genérica
 f_ma(src, len, tipo) =>
-    float result = na
-    if tipo == "SMA"
-        result := ta.sma(src, len)
-    else if tipo == "EMA"
-        result := ta.ema(src, len)
-    else if tipo == "WMA"
-        result := ta.wma(src, len)
-    else
-        result := ta.rma(src, len)
-    result
+    switch tipo
+        'SMA' => ta.sma(src, len)
+        'EMA' => ta.ema(src, len)
+        'WMA' => ta.wma(src, len)
+        =>       ta.rma(src, len)
 
+// Porcentaje de distancia del precio respecto a una media
+f_dist(ma) =>
+    ((close - ma) / ma) * 100
 
-// ===== Medias Moviles Diarias =====
-es_diario = timeframe.isdaily
+// Color de fondo según porcentaje positivo/negativo
+f_bgColor(pct) =>
+    pct > 0 ? #367d39 : #8d2727
 
-M_Avg1 = input.bool(true,  title='', group='Medias Moviles Diarias', inline="a")
-suavizado1 = input.string("SMA", title="Media 1", inline="a", group="Medias Moviles Diarias", options=["SMA","EMA","WMA","RMA"])
-periodo1   = input.int(21, "De", inline="a", group="Medias Moviles Diarias")
-
-M_Avg2 = input.bool(true,  title='', group='Medias Moviles Diarias', inline="b")
-suavizado2 = input.string("SMA", title="Media 2", inline="b", group="Medias Moviles Diarias", options=["SMA","EMA","WMA","RMA"])
-periodo2   = input.int(30, "De", inline="b", group="Medias Moviles Diarias")
-
-M_Avg3 = input.bool(true,  title='', group='Medias Moviles Diarias', inline="c")
-suavizado3 = input.string("SMA", title="Media 3", inline="c", group="Medias Moviles Diarias", options=["SMA","EMA","WMA","RMA"])
-periodo3   = input.int(100, "De", inline="c", group="Medias Moviles Diarias")
-
-M_Avg4 = input.bool(true,  title='', group='Medias Moviles Diarias', inline="d")
-suavizado4 = input.string("EMA", title="Media 4", inline="d", group="Medias Moviles Diarias", options=["SMA","EMA","WMA","RMA"])
-periodo4   = input.int(150, "De", inline="d", group="Medias Moviles Diarias")
-
-M_Avg5 = input.bool(true,  title='', group='Medias Moviles Diarias', inline="e")
-suavizado5 = input.string("EMA", title="Media 5", inline="e", group="Medias Moviles Diarias", options=["SMA","EMA","WMA","RMA"])
-periodo5   = input.int(200, "De", inline="e", group="Medias Moviles Diarias")
-
-mm1 = es_diario ? f_ma(close, periodo1, suavizado1) : na
-mm2 = es_diario ? f_ma(close, periodo2, suavizado2) : na
-mm3 = es_diario ? f_ma(close, periodo3, suavizado3) : na
-mm4 = es_diario ? f_ma(close, periodo4, suavizado4) : na
-mm5 = es_diario ? f_ma(close, periodo5, suavizado5) : na
-
-color1 = input.color(color.blue,   "Color 1", inline="a", group="Medias Moviles Diarias")
-color2 = input.color(color.green,   "Color 2", inline="b", group="Medias Moviles Diarias")
-color3 = input.color(color.yellow,  "Color 3", inline="c", group="Medias Moviles Diarias")
-color4 = input.color(color.orange, "Color 4", inline="d", group="Medias Moviles Diarias")
-color5 = input.color(color.red, "Color 5", inline="e", group="Medias Moviles Diarias")
-
-MM1 = input(#4caf4f4c, title='Color cuando MM1 > MM2')
-MM2 = input(#ff52524d, title='Color cuando MM2 > MM1')
-
-// Trazar las medias móviles
-plot_mm1 = plot(mm1, color=#00000000, editable = false, force_overlay=true)
-plot_mm2 = plot(mm2, color=#00000000, editable = false, force_overlay=true)
-
-// Rellenar el área entre las medias móviles
-fill(plot_mm1, plot_mm2, color = (mm1 > mm2 ? MM1 : MM2))
-
-desplazamiento00    = 1 * (time - time[1])
-desplazamiento1     = time + 60 + 60 * 24
-
-if M_Avg1
-    Label_A1 = label.new(time + desplazamiento00, mm1, xloc=xloc.bar_time, text=suavizado1 + ' ' + str.tostring(periodo1), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color1, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A1[1])
-if M_Avg2
-    Label_A2 = label.new(time + desplazamiento00, mm2-(mm2*0.001), xloc=xloc.bar_time, text=suavizado2 + ' ' + str.tostring(periodo2), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color2, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A2[1])
-if M_Avg3
-    Label_A3 = label.new(time + desplazamiento00, mm3-(mm3*0.001), xloc=xloc.bar_time, text=suavizado3 + ' ' + str.tostring(periodo3), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color3, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A3[1])
-if M_Avg4
-    Label_A4 = label.new(time + desplazamiento00, mm4-(mm4*0.001), xloc=xloc.bar_time, text=suavizado4 + ' ' + str.tostring(periodo4), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color4, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A4[1])
-if M_Avg5
-    Label_A5 = label.new(time + desplazamiento00, mm5-(mm5*0.001), xloc=xloc.bar_time, text=suavizado5 + ' ' + str.tostring(periodo5), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color5, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A5[1])
-
-plot(M_Avg1 and es_diario ? mm1 : na, title = 'Media Movil 1 Diaria', color = color1, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg2 and es_diario ? mm2 : na, title = 'Media Movil 2 Diaria', color = color2, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg3 and es_diario ? mm3 : na, title = 'Media Movil 3 Diaria', color = color3, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg4 and es_diario ? mm4 : na, title = 'Media Movil 4 Diaria', color = color4, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg5 and es_diario ? mm5 : na, title = 'Media Movil 5 Diaria', color = color5, linewidth = 1, editable = true, force_overlay=true)
-
-var table T_performance = table.new(position.top_right, 6, 2, border_width=1, force_overlay=true)
-
-f_return(_v1, _v2) =>
-    (_v1 - _v2) * 100 / math.abs(_v2)
-
-f_performance(_barsBack) =>
-    _performance = request.security(syminfo.tickerid, '1D', f_return(close, close[_barsBack]))
-    _performance
-
-lastYearClose = request.security(syminfo.tickerid, '12M', close[1], lookahead=barmerge.lookahead_on)
-C_positivo = color.rgb(15, 68, 37)
-C_negativo = #9b1d1d
-f_fillCell(_table, _column, _row, _value) =>
-    _c_color  = color.new(_value >= 0 ? C_positivo : C_negativo, 0)
-    _cellText = str.tostring(_value, '0.00') + '%\n'
-    table.cell(_table, _column, _row, _cellText, bgcolor=_c_color, text_color=color.white)
-f_fillCell2(_table, _column, _row, _timeframe) =>
-    _cellText =  _timeframe
-    table.cell(_table, _column, _row, _cellText, bgcolor=#000000, text_color=color.white)
-if Mostrar_T
-    f_fillCell2(T_performance, 5, 0, '1 Año')
-    f_fillCell2(T_performance, 4, 0, 'Este Año')
-    f_fillCell2(T_performance, 3, 0, '6 Meses')
-    f_fillCell2(T_performance, 2, 0, '3 Meses')
-    f_fillCell2(T_performance, 1, 0, '1 Mes')
-    f_fillCell2(T_performance, 0, 0, '1 Semana')
-    f_fillCell(T_performance, 5, 1, f_performance(251))
-    f_fillCell(T_performance, 4, 1, f_return(close, lastYearClose))
-    f_fillCell(T_performance, 3, 1, f_performance(126))
-    f_fillCell(T_performance, 2, 1, f_performance(63))
-    f_fillCell(T_performance, 1, 1, f_performance(21))
-    f_fillCell(T_performance, 0, 1, f_performance(5))
-   
-
-// ===== Medias Moviles Semanales =====
-es_semanal = timeframe.isweekly
-
-M_Avg1s = input.bool(true, title='', group='Medias Moviles Semanales', inline="j")
-suavizado1s = input.string("EMA", title="Media 1", inline="j", group="Medias Moviles Semanales", options=["SMA","EMA","WMA","RMA"])
-periodo1s = input.int(10, "De", inline="j", group="Medias Moviles Semanales")
-
-M_Avg2s = input.bool(true, title='', group='Medias Moviles Semanales', inline="k")
-suavizado2s = input.string("EMA", title="Media 2", inline="k", group="Medias Moviles Semanales", options=["SMA","EMA","WMA","RMA"])
-periodo2s = input.int(20, "De", inline="k", group="Medias Moviles Semanales")
-
-M_Avg3s = input.bool(true, title='', group='Medias Moviles Semanales', inline="l")
-suavizado3s = input.string("EMA", title="Media 3", inline="l", group="Medias Moviles Semanales", options=["SMA","EMA","WMA","RMA"])
-periodo3s = input.int(30, "De", inline="l", group="Medias Moviles Semanales")
-
-M_Avg4s = input.bool(true, title='', group='Medias Moviles Semanales', inline="m")
-suavizado4s = input.string("EMA", title="Media 4", inline="m", group="Medias Moviles Semanales", options=["SMA","EMA","WMA","RMA"])
-periodo4s = input.int(50, "De", inline="m", group="Medias Moviles Semanales")
-
-M_Avg5s = input.bool(true, title='', group='Medias Moviles Semanales', inline="n")
-suavizado5s = input.string("EMA", title="Media 5", inline="n", group="Medias Moviles Semanales", options=["SMA","EMA","WMA","RMA"])
-periodo5s = input.int(200, "De", inline="n", group="Medias Moviles Semanales")
-
-mmm1 = es_semanal ? f_ma(close, periodo1s, suavizado1s) : na
-mmm2 = es_semanal ? f_ma(close, periodo2s, suavizado2s) : na
-mmm3 = es_semanal ? f_ma(close, periodo3s, suavizado3s) : na
-mmm4 = es_semanal ? f_ma(close, periodo4s, suavizado4s) : na
-mmm5 = es_semanal ? f_ma(close, periodo5s, suavizado5s) : na
-
-color10s = input.color(color.blue,   title="Color 10", inline="j", group="Medias Moviles Semanales")
-color20s = input.color(color.green,  title="Color 20", inline="k", group="Medias Moviles Semanales")
-color30s = input.color(color.yellow, title="Color 30", inline="l", group="Medias Moviles Semanales")
-color40s = input.color(color.orange, title="Color 40", inline="m", group="Medias Moviles Semanales")
-color50s = input.color(color.red,    title="Color 50", inline="n", group="Medias Moviles Semanales")
-
-MMM1 = input(#4caf4f4c, title='Color cuando MM1 > MM2', group="Medias Moviles Semanales")
-MMM2 = input(#ff52524d, title='Color cuando MM2 > MM1', group="Medias Moviles Semanales")
-
-plot_mmm1 = plot(mmm1, color=#00000000, editable = false, force_overlay=true)
-plot_mmm2 = plot(mmm2, color=#00000000, editable = false, force_overlay=true)
-
-fill(plot_mmm1, plot_mmm2, color = (mmm1 > mmm2 ? MMM1 : MMM2))
-
-desplazamiento000    = 1 * (time - time[1])
-desplazamiento11     = time + 60 + 60 * 24
-
-if M_Avg1s
-    Label_A1s = label.new(time + desplazamiento000, mmm1, xloc=xloc.bar_time, text=suavizado1s + ' ' + str.tostring(periodo1s), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color10s, force_overlay=true)
-    label.delete(Label_A1s[1])
-if M_Avg2s
-    Label_A2s = label.new(time + desplazamiento000, mmm2-(mmm2*0.001), xloc=xloc.bar_time, text=suavizado2s + ' ' + str.tostring(periodo2s), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color20s, force_overlay=true)
-    label.delete(Label_A2s[1])
-if M_Avg3s
-    Label_A3s = label.new(time + desplazamiento000, mmm3-(mmm3*0.001), xloc=xloc.bar_time, text=suavizado3s + ' ' + str.tostring(periodo3s), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color30s, force_overlay=true)
-    label.delete(Label_A3s[1])
-if M_Avg4s
-    Label_A4s = label.new(time + desplazamiento000, mmm4-(mmm4*0.001), xloc=xloc.bar_time, text=suavizado4s + ' ' + str.tostring(periodo4s), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color40s, force_overlay=true)
-    label.delete(Label_A4s[1])
-if M_Avg5s
-    Label_A5s = label.new(time + desplazamiento000, mmm5-(mmm5*0.001), xloc=xloc.bar_time, text=suavizado5s + ' ' + str.tostring(periodo5s), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color50s, force_overlay=true)
-    label.delete(Label_A5s[1])
-
-plot(M_Avg1s and es_semanal ? mmm1 : na, title = 'Media Movil 1 Semanal', color = color10s, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg2s and es_semanal ? mmm2 : na, title = 'Media Movil 2 Semanal', color = color20s, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg3s and es_semanal ? mmm3 : na, title = 'Media Movil 3 Semanal', color = color30s, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg4s and es_semanal ? mmm4 : na, title = 'Media Movil 4 Semanal', color = color40s, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg5s and es_semanal ? mmm5 : na, title = 'Media Movil 5 Semanal', color = color50s, linewidth = 1, editable = true, force_overlay=true)
-
-
-// ===== Medias Moviles Mensuales =====
-es_mensual = timeframe.ismonthly
-
-M_Avg1m = input.bool(true, title='', group='Medias Moviles Mensuales', inline="a")
-suavizado1m = input.string("EMA", title="Media 1", inline="a", group="Medias Moviles Mensuales", options=["SMA","EMA","WMA","RMA"])
-periodo1m = input.int(10, "De", inline="a", group="Medias Moviles Mensuales")
-
-M_Avg2m = input.bool(true, title='', group='Medias Moviles Mensuales', inline="b")
-suavizado2m = input.string("EMA", title="Media 2", inline="b", group="Medias Moviles Mensuales", options=["SMA","EMA","WMA","RMA"])
-periodo2m = input.int(20, "De", inline="b", group="Medias Moviles Mensuales")
-
-M_Avg3m = input.bool(true, title='', group='Medias Moviles Mensuales', inline="c")
-suavizado3m = input.string("EMA", title="Media 3", inline="c", group="Medias Moviles Mensuales", options=["SMA","EMA","WMA","RMA"])
-periodo3m = input.int(30, "De", inline="c", group="Medias Moviles Mensuales")
-
-M_Avg4m = input.bool(true, title='', group='Medias Moviles Mensuales', inline="d")
-suavizado4m = input.string("EMA", title="Media 4", inline="d", group="Medias Moviles Mensuales", options=["SMA","EMA","WMA","RMA"])
-periodo4m = input.int(40, "De", inline="d", group="Medias Moviles Mensuales")
-
-M_Avg5m = input.bool(true, title='', group='Medias Moviles Mensuales', inline="e")
-suavizado5m = input.string("EMA", title="Media 5", inline="e", group="Medias Moviles Mensuales", options=["SMA","EMA","WMA","RMA"])
-periodo5m = input.int(50, "De", inline="e", group="Medias Moviles Mensuales")
-
-mmmm1 = es_mensual ? f_ma(close, periodo1m, suavizado1m) : na
-mmmm2 = es_mensual ? f_ma(close, periodo2m, suavizado2m) : na
-mmmm3 = es_mensual ? f_ma(close, periodo3m, suavizado3m) : na
-mmmm4 = es_mensual ? f_ma(close, periodo4m, suavizado4m) : na
-mmmm5 = es_mensual ? f_ma(close, periodo5m, suavizado5m) : na
-
-color1m = input.color(color.blue, title="Color 1", inline="a", group="Medias Moviles Mensuales")
-color2m = input.color(color.green,  title="Color 2", inline="b", group="Medias Moviles Mensuales")
-color3m = input.color(color.yellow, title="Color 3", inline="c", group="Medias Moviles Mensuales") // oliva
-color4m = input.color(color.orange, title="Color 4", inline="d", group="Medias Moviles Mensuales")
-color5m = input.color(color.red, title="Color 5", inline="e", group="Medias Moviles Mensuales")
-
-desplazamiento0000    = 1 * (time - time[1])
-desplazamiento111     = time + 60 + 60 * 24
-
-if M_Avg1m
-    Label_A1m = label.new(time + desplazamiento0000, mmmm1, xloc=xloc.bar_time, text=suavizado1m + ' ' + str.tostring(periodo1m), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color1m, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A1m[1])
-if M_Avg2m
-    Label_A2m = label.new(time + desplazamiento0000, mmmm2-(mmmm2*0.001), xloc=xloc.bar_time, text=suavizado2m + ' ' + str.tostring(periodo2m), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color2m, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A2m[1])
-if M_Avg3m
-    Label_A3m = label.new(time + desplazamiento0000, mmmm3-(mmmm3*0.001), xloc=xloc.bar_time, text=suavizado3m + ' ' + str.tostring(periodo3m), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color3m, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A3m[1])
-if M_Avg4m
-    Label_A4m = label.new(time + desplazamiento0000, mmmm4-(mmmm4*0.001), xloc=xloc.bar_time, text=suavizado4m + ' ' + str.tostring(periodo4m), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color4m, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A4m[1])
-if M_Avg5m
-    Label_A5m = label.new(time + desplazamiento0000, mmmm5-(mmmm5*0.001), xloc=xloc.bar_time, text=suavizado5m + ' ' + str.tostring(periodo5m), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=color5m, tooltip='Suerte', force_overlay=true)
-    label.delete(Label_A5m[1])
-
-plot(M_Avg1m and es_mensual ? mmmm1 : na, title = 'Media Movil 1 Mensual', color = color1m, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg2m and es_mensual ? mmmm2 : na, title = 'Media Movil 2 Mensual', color = color2m, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg3m and es_mensual ? mmmm3 : na, title = 'Media Movil 3 Mensual', color = color3m, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg4m and es_mensual ? mmmm4 : na, title = 'Media Movil 4 Mensual', color = color4m, linewidth = 1, editable = true, force_overlay=true)
-plot(M_Avg5m and es_mensual ? mmmm5 : na, title = 'Media Movil 5 Mensual', color = color5m, linewidth = 1, editable = true, force_overlay=true)
-
-
-// Configuración del RSI
-int rsiLength = input(14, title="Longitud", group='RSI')
-float rsiSource = close
-float rsiValue = ta.rsi(rsiSource, rsiLength)
-
-
-// Configuración de las Medias Moviles Diarias
-float mmmm1Value = mmmm1
-float mmmm2Value = mmmm2
-float mmmm3Value = mmmm3
-float mmmm4Value = mmmm4
-float mmmm5Value = mmmm5
-
-// Cálculos de porcentajes de distancia
-float priceDistancemmmm1 = ((close - mmmm1) / mmmm1) * 100
-float priceDistancemmmm2 = ((close - mmmm2) / mmmm2) * 100
-float priceDistancemmmm3 = ((close - mmmm3) / mmmm3) * 100
-float priceDistancemmmm4 = ((close - mmmm4) / mmmm4) * 100
-float priceDistancemmmm5 = ((close - mmmm5) / mmmm5) * 100
-
-// Crear tabla para mostrar los valores
-var table infoTablee = table.new(position.bottom_right, 9, 9, bgcolor=#242424, force_overlay=true)
-
-// Función para determinar el color de fondo basado en el porcentaje
-bgColorm(percentagem) =>
-    percentagem > 0 ? #367d39 : #8d2727
-
-// Función para determinar el color basado en el RSI
-colorNumeroo(numeroo) =>
-    if numeroo > 70
+// Color según nivel de RSI
+f_colorRSI(val) =>
+    if val > 70
         color.red
-    else if numeroo >= 60
+    else if val >= 60
         color.orange
-    else if numeroo >= 40
+    else if val >= 40
         #53555d
-    else if numeroo >= 30
+    else if val >= 30
         #477003
-    else if numeroo <30
+    else
         color.lime
 
-if  timeframe.ismonthly and InfoTableT
-    // Celdas para los títulos y valores
-    table.cell(infoTablee, 0, 0, text=suavizado1m + ' ' + str.tostring(periodo1m), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 0, 1, str.tostring(priceDistancemmmm1, "#.00") + "%", text_color=color.white, bgcolor=bgColorm(priceDistancemmmm1))
-    table.cell(infoTablee, 1, 0, text=suavizado2m + ' ' + str.tostring(periodo2m), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 1, 1, str.tostring(priceDistancemmmm2, "#.00") + "%", text_color=color.white, bgcolor=bgColorm(priceDistancemmmm2))
-    table.cell(infoTablee, 2, 0, text=suavizado3m + ' ' + str.tostring(periodo3m), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 2, 1, str.tostring(priceDistancemmmm3, "#.00") + "%", text_color=color.white, bgcolor=bgColorm(priceDistancemmmm3))
-    table.cell(infoTablee, 3, 0, text=suavizado4m + ' ' + str.tostring(periodo4), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 3, 1, str.tostring(priceDistancemmmm4, "#.00") + "%", text_color=color.white, bgcolor=bgColorm(priceDistancemmmm4))
-    table.cell(infoTablee, 4, 0, text=suavizado5m + ' ' + str.tostring(periodo5), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 4, 1, str.tostring(priceDistancemmmm5, "#.00") + "%", text_color=color.white, bgcolor=bgColorm(priceDistancemmmm5))
-    table.cell(infoTablee, 5, 0, text="RSI", text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 5, 1, str.tostring(rsiValue, "#"), text_color=color.white, bgcolor=colorNumeroo(rsiValue))
-    table.cell(infoTablee, 5, 3, bgcolor=#000000)
-    table.cell(infoTablee, 4, 3, bgcolor=#000000)
-    table.cell(infoTablee, 3, 3, text="By Dylan Argot", text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 2, 3, bgcolor=#000000)
-    table.cell(infoTablee, 1, 3, bgcolor=#000000)
-    table.cell(infoTablee, 0, 3, bgcolor=#000000)
+// Retorno porcentual
+f_return(v1, v2) =>
+    (v1 - v2) * 100 / math.abs(v2)
 
+// Performance en timeframe diario
+f_perf(barsBack) =>
+    request.security(syminfo.tickerid, '1D', f_return(close, close[barsBack]))
 
-// Inputs para el cálculo de la Beta
-
-activoReferente = "SPY"
-timeframe = timeframe.period
-
-length = 60
-
-
-// Función para calcular el retorno logarítmico
-
-return_log(src) =>
-
+// Retorno logarítmico (para Beta)
+f_logReturn(src) =>
     math.log(src / src[1])
 
+// MFI (para Koncorde)
+f_mfi(len) =>
+    100.0 - 100.0 / (1.0 + math.sum(volume * (ta.change(hlc3) <= 0 ? 0 : hlc3), len) / math.sum(volume * (ta.change(hlc3) >= 0 ? 0 : hlc3), len))
 
-// Solicitar datos del instrumento y el benchmark con la temporalidad deseada
+// Fila de tabla de datos: encabezado + porcentaje
+f_tablaFila(tbl, col, tipo, periodo, dist) =>
+    table.cell(tbl, col, 0, text=tipo + ' ' + str.tostring(periodo), text_color=color.white, bgcolor=#000000)
+    table.cell(tbl, col, 1, str.tostring(dist, '#.00') + '%', text_color=color.white, bgcolor=f_bgColor(dist))
 
-instrument = request.security(syminfo.tickerid, timeframe, close)
+// Encabezado de performance
+f_perfHeader(tbl, col, row, txt) =>
+    table.cell(tbl, col, row, txt, bgcolor=#000000, text_color=color.white)
 
-benchmark = request.security(activoReferente, timeframe, close)
-
-
-// Cálculos de retorno logarítmico
-
-inst_return = return_log(instrument)
-
-bench_return = return_log(benchmark)
-
-
-// Cálculos de promedios
-
-avg_inst_return = ta.sma(inst_return, length)
-
-avg_bench_return = ta.sma(bench_return, length)
+// Celda de performance con color
+f_perfCell(tbl, col, row, val) =>
+    c = color.new(val >= 0 ? color.rgb(15, 68, 37) : #9b1d1d, 0)
+    table.cell(tbl, col, row, str.tostring(val, '0.00') + '%\n', bgcolor=c, text_color=color.white)
 
 
-// Cálculo de la covarianza y beta
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║                 CÁLCULOS - MEDIAS MÓVILES                            ║
+// ╚══════════════════════════════════════════════════════════════════════╝
 
-sum = 0.0
+esD = timeframe.isdaily
+esS = timeframe.isweekly
+esM = timeframe.ismonthly
 
-for idx = 0 to length - 1
+// Diarias
+maD1 = esD ? f_ma(close, lenD1, tipoD1) : na
+maD2 = esD ? f_ma(close, lenD2, tipoD2) : na
+maD3 = esD ? f_ma(close, lenD3, tipoD3) : na
+maD4 = esD ? f_ma(close, lenD4, tipoD4) : na
+maD5 = esD ? f_ma(close, lenD5, tipoD5) : na
 
-    inst_variance = inst_return[idx] - avg_inst_return
+// Semanales
+maS1 = esS ? f_ma(close, lenS1, tipoS1) : na
+maS2 = esS ? f_ma(close, lenS2, tipoS2) : na
+maS3 = esS ? f_ma(close, lenS3, tipoS3) : na
+maS4 = esS ? f_ma(close, lenS4, tipoS4) : na
+maS5 = esS ? f_ma(close, lenS5, tipoS5) : na
+maS6 = esS ? f_ma(close, lenS6, tipoS6) : na
 
-    bench_variance = bench_return[idx] - avg_bench_return
-
-    sum := sum + (inst_variance * bench_variance)
-
-
-covariance = sum / (length - 1)
-
-marketVariance = ta.variance(bench_return, length)
-
-beta = covariance / marketVariance
-
-// Configuración de las Medias Moviles Diarias
-float mm1Value = mm1
-float mm2Value = mm2
-float mm3Value = mm3
-float mm4Value = mm4
-float mm5Value = mm5
-
-// Cálculos de porcentajes de distancia
-float priceDistancemm1 = ((close - mm1) / mm1) * 100
-float priceDistancemm2 = ((close - mm2) / mm2) * 100
-float priceDistancemm3 = ((close - mm3) / mm3) * 100
-float priceDistancemm4 = ((close - mm4) / mm4) * 100
-float priceDistancemm5 = ((close - mm5) / mm5) * 100
+// Mensuales
+maM1 = esM ? f_ma(close, lenM1, tipoM1) : na
+maM2 = esM ? f_ma(close, lenM2, tipoM2) : na
+maM3 = esM ? f_ma(close, lenM3, tipoM3) : na
+maM4 = esM ? f_ma(close, lenM4, tipoM4) : na
+maM5 = esM ? f_ma(close, lenM5, tipoM5) : na
 
 
-// Función para determinar el color de fondo basado en el porcentaje
-bgColor(percentage) =>
-    percentage > 0 ? #367d39 : #8d2727
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║               PLOTS - MEDIAS MÓVILES + LABELS                        ║
+// ╚══════════════════════════════════════════════════════════════════════╝
 
-// Función para determinar el color basado en el RSI
-colorNumero(numero) =>
-    if numero > 70
-        color.red
-    else if numero >= 60
-        color.orange
-    else if numero >= 40
-        #53555d
-    else if numero >= 30
-        #477003
-    else
-        color.lime
+barOffset = time - time[1]
 
-if  timeframe.isdaily and infoTable 
-    // Celdas para los títulos y valores
-    table.cell(infoTablee, 0, 0, text=suavizado1 + ' ' + str.tostring(periodo1), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 0, 1, str.tostring(priceDistancemm1, "#.00") + "%", text_color=color.white, bgcolor=bgColor(priceDistancemm1))
-    table.cell(infoTablee, 1, 0, text=suavizado2 + ' ' + str.tostring(periodo2), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 1, 1, str.tostring(priceDistancemm2, "#.00") + "%", text_color=color.white, bgcolor=bgColor(priceDistancemm2))
-    table.cell(infoTablee, 2, 0, text=suavizado3 + ' ' + str.tostring(periodo3), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 2, 1, str.tostring(priceDistancemm3, "#.00") + "%", text_color=color.white, bgcolor=bgColor(priceDistancemm3))
-    table.cell(infoTablee, 3, 0, text=suavizado4 + ' ' + str.tostring(periodo4), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 3, 1, str.tostring(priceDistancemm4, "#.00") + "%", text_color=color.white, bgcolor=bgColor(priceDistancemm4))
-    table.cell(infoTablee, 4, 0, text=suavizado5 + ' ' + str.tostring(periodo5), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 4, 1, str.tostring(priceDistancemm5, "#.00") + "%", text_color=color.white, bgcolor=bgColor(priceDistancemm5))
-    table.cell(infoTablee, 6, 0, text="RSI", text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 6, 1, str.tostring(rsiValue, "#"), text_color=color.white, bgcolor=colorNumero(rsiValue))
-    table.cell(infoTablee, 7, 0, text="β", text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 7, 1, str.tostring(beta, "#.#"), text_color=color.white, bgcolor=#53555d)
-    table.cell(infoTablee, 7, 3, bgcolor=#000000)
-    table.cell(infoTablee, 6, 3, bgcolor=#000000)
-    table.cell(infoTablee, 5, 3, bgcolor=#000000)
-    table.cell(infoTablee, 4, 3, bgcolor=#000000)
-    table.cell(infoTablee, 3, 3, text="By Dylan Argot", text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 2, 3, bgcolor=#000000)
-    table.cell(infoTablee, 1, 3, bgcolor=#000000)
-    table.cell(infoTablee, 0, 3, bgcolor=#000000)
+// --- Diarias: fill entre MA1 y MA2 ---
+pD1 = plot(maD1, color=#00000000, editable=false, force_overlay=true)
+pD2 = plot(maD2, color=#00000000, editable=false, force_overlay=true)
+fill(pD1, pD2, color=(maD1 > maD2 ? fillD_alcista : fillD_bajista))
 
-// Configuración de la RMA9
-float mmm1Value = mmm1
-float mmm2Value = mmm2
-float mmm3Value = mmm3
-float mmm4Value = mmm4
-float mmm5Value = mmm5
+plot(showD1 and esD ? maD1 : na, title='MA 1 Diaria', color=colD1, linewidth=1, force_overlay=true)
+plot(showD2 and esD ? maD2 : na, title='MA 2 Diaria', color=colD2, linewidth=1, force_overlay=true)
+plot(showD3 and esD ? maD3 : na, title='MA 3 Diaria', color=colD3, linewidth=1, force_overlay=true)
+plot(showD4 and esD ? maD4 : na, title='MA 4 Diaria', color=colD4, linewidth=1, force_overlay=true)
+plot(showD5 and esD ? maD5 : na, title='MA 5 Diaria', color=colD5, linewidth=1, force_overlay=true)
 
-// Cálculos de porcentajes de distancia
-float priceDistancemmm1 = ((close - mmm1) / mmm1) * 100
-float priceDistancemmm2 = ((close - mmm2) / mmm2) * 100
-float priceDistancemmm3 = ((close - mmm3) / mmm3) * 100
-float priceDistancemmm4 = ((close - mmm4) / mmm4) * 100
-float priceDistancemmm5 = ((close - mmm5) / mmm5) * 100
+if showD1
+    lblD1 = label.new(time + barOffset, maD1, xloc=xloc.bar_time, text=tipoD1 + ' ' + str.tostring(lenD1), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colD1, force_overlay=true)
+    label.delete(lblD1[1])
+if showD2
+    lblD2 = label.new(time + barOffset, maD2 - maD2 * 0.001, xloc=xloc.bar_time, text=tipoD2 + ' ' + str.tostring(lenD2), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colD2, force_overlay=true)
+    label.delete(lblD2[1])
+if showD3
+    lblD3 = label.new(time + barOffset, maD3 - maD3 * 0.001, xloc=xloc.bar_time, text=tipoD3 + ' ' + str.tostring(lenD3), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colD3, force_overlay=true)
+    label.delete(lblD3[1])
+if showD4
+    lblD4 = label.new(time + barOffset, maD4 - maD4 * 0.001, xloc=xloc.bar_time, text=tipoD4 + ' ' + str.tostring(lenD4), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colD4, force_overlay=true)
+    label.delete(lblD4[1])
+if showD5
+    lblD5 = label.new(time + barOffset, maD5 - maD5 * 0.001, xloc=xloc.bar_time, text=tipoD5 + ' ' + str.tostring(lenD5), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colD5, force_overlay=true)
+    label.delete(lblD5[1])
+
+// --- Semanales: fill entre MA1 y MA2 ---
+pS1 = plot(maS1, color=#00000000, editable=false, force_overlay=true)
+pS2 = plot(maS2, color=#00000000, editable=false, force_overlay=true)
+fill(pS1, pS2, color=(maS1 > maS2 ? fillS_alcista : fillS_bajista))
+
+plot(showS1 and esS ? maS1 : na, title='MA 1 Semanal', color=colS1, linewidth=1, force_overlay=true)
+plot(showS2 and esS ? maS2 : na, title='MA 2 Semanal', color=colS2, linewidth=1, force_overlay=true)
+plot(showS3 and esS ? maS3 : na, title='MA 3 Semanal', color=colS3, linewidth=1, force_overlay=true)
+plot(showS4 and esS ? maS4 : na, title='MA 4 Semanal', color=colS4, linewidth=1, force_overlay=true)
+plot(showS5 and esS ? maS5 : na, title='MA 5 Semanal', color=colS5, linewidth=1, force_overlay=true)
+plot(showS6 and esS ? maS6 : na, title='MA 6 Semanal (SMA 200)', color=colS6, linewidth=1, force_overlay=true)
+
+if showS1
+    lblS1 = label.new(time + barOffset, maS1, xloc=xloc.bar_time, text=tipoS1 + ' ' + str.tostring(lenS1), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colS1, force_overlay=true)
+    label.delete(lblS1[1])
+if showS2
+    lblS2 = label.new(time + barOffset, maS2 - maS2 * 0.001, xloc=xloc.bar_time, text=tipoS2 + ' ' + str.tostring(lenS2), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colS2, force_overlay=true)
+    label.delete(lblS2[1])
+if showS3
+    lblS3 = label.new(time + barOffset, maS3 - maS3 * 0.001, xloc=xloc.bar_time, text=tipoS3 + ' ' + str.tostring(lenS3), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colS3, force_overlay=true)
+    label.delete(lblS3[1])
+if showS4
+    lblS4 = label.new(time + barOffset, maS4 - maS4 * 0.001, xloc=xloc.bar_time, text=tipoS4 + ' ' + str.tostring(lenS4), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colS4, force_overlay=true)
+    label.delete(lblS4[1])
+if showS5
+    lblS5 = label.new(time + barOffset, maS5 - maS5 * 0.001, xloc=xloc.bar_time, text=tipoS5 + ' ' + str.tostring(lenS5), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colS5, force_overlay=true)
+    label.delete(lblS5[1])
+if showS6
+    lblS6 = label.new(time + barOffset, maS6 - maS6 * 0.001, xloc=xloc.bar_time, text=tipoS6 + ' ' + str.tostring(lenS6), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colS6, force_overlay=true)
+    label.delete(lblS6[1])
+
+// --- Mensuales: plots (sin fill) ---
+plot(showM1 and esM ? maM1 : na, title='MA 1 Mensual', color=colM1, linewidth=1, force_overlay=true)
+plot(showM2 and esM ? maM2 : na, title='MA 2 Mensual', color=colM2, linewidth=1, force_overlay=true)
+plot(showM3 and esM ? maM3 : na, title='MA 3 Mensual', color=colM3, linewidth=1, force_overlay=true)
+plot(showM4 and esM ? maM4 : na, title='MA 4 Mensual', color=colM4, linewidth=1, force_overlay=true)
+plot(showM5 and esM ? maM5 : na, title='MA 5 Mensual', color=colM5, linewidth=1, force_overlay=true)
+
+if showM1
+    lblM1 = label.new(time + barOffset, maM1, xloc=xloc.bar_time, text=tipoM1 + ' ' + str.tostring(lenM1), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colM1, force_overlay=true)
+    label.delete(lblM1[1])
+if showM2
+    lblM2 = label.new(time + barOffset, maM2 - maM2 * 0.001, xloc=xloc.bar_time, text=tipoM2 + ' ' + str.tostring(lenM2), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colM2, force_overlay=true)
+    label.delete(lblM2[1])
+if showM3
+    lblM3 = label.new(time + barOffset, maM3 - maM3 * 0.001, xloc=xloc.bar_time, text=tipoM3 + ' ' + str.tostring(lenM3), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colM3, force_overlay=true)
+    label.delete(lblM3[1])
+if showM4
+    lblM4 = label.new(time + barOffset, maM4 - maM4 * 0.001, xloc=xloc.bar_time, text=tipoM4 + ' ' + str.tostring(lenM4), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colM4, force_overlay=true)
+    label.delete(lblM4[1])
+if showM5
+    lblM5 = label.new(time + barOffset, maM5 - maM5 * 0.001, xloc=xloc.bar_time, text=tipoM5 + ' ' + str.tostring(lenM5), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colM5, force_overlay=true)
+    label.delete(lblM5[1])
 
 
-// Función para determinar el color de fondo basado en el porcentaje
-bgColorr(percentagee) =>
-    percentagee > 0 ? #367d39 : #8d2727
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║                   TABLA DE PERFORMANCE                               ║
+// ╚══════════════════════════════════════════════════════════════════════╝
 
-if timeframe.isweekly and InfoTable
-    // Celdas para los títulos y valores
-    table.cell(infoTablee , 0, 0, text=suavizado1s + ' ' + str.tostring(periodo1s), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 0, 1, str.tostring(priceDistancemmm1, "#.00") + "%", text_color=color.white, bgcolor=bgColorr(priceDistancemmm1))
-    table.cell(infoTablee, 1, 0, text=suavizado2s + ' ' + str.tostring(periodo2s), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 1, 1, str.tostring(priceDistancemmm2, "#.00") + "%", text_color=color.white, bgcolor=bgColorr(priceDistancemmm2))
-    table.cell(infoTablee, 2, 0, text=suavizado3s + ' ' + str.tostring(periodo3s), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 2, 1, str.tostring(priceDistancemmm3, "#.00") + "%", text_color=color.white, bgcolor=bgColorr(priceDistancemmm3))
-    table.cell(infoTablee, 3, 0, text=suavizado4s + ' ' + str.tostring(periodo4s), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 3, 1, str.tostring(priceDistancemmm4, "#.00") + "%", text_color=color.white, bgcolor=bgColorr(priceDistancemmm4))
-    table.cell(infoTablee, 4, 0, text=suavizado5s + ' ' + str.tostring(periodo5s), text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 4, 1, str.tostring(priceDistancemmm5, "#.00") + "%", text_color=color.white, bgcolor=bgColorr(priceDistancemmm5))
-    table.cell(infoTablee, 5, 0, text="RSI", text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 5, 1, str.tostring(rsiValue, "#"), text_color=color.white, bgcolor=colorNumero(rsiValue))
-    table.cell(infoTablee, 5, 3, bgcolor=#000000)
-    table.cell(infoTablee, 4, 3, bgcolor=#000000)
-    table.cell(infoTablee, 3, 3, text="By Dylan Argot", text_color=color.white, bgcolor=#000000)
-    table.cell(infoTablee, 2, 3, bgcolor=#000000)
-    table.cell(infoTablee, 1, 3, bgcolor=#000000)
-    table.cell(infoTablee, 0, 3, bgcolor=#000000)
+var table tblPerf = table.new(position.top_right, 6, 2, border_width=1, force_overlay=true)
+lastYearClose = request.security(syminfo.tickerid, '12M', close[1], lookahead=barmerge.lookahead_on)
+
+if showPerformance
+    f_perfHeader(tblPerf, 0, 0, '1 Semana')
+    f_perfHeader(tblPerf, 1, 0, '1 Mes')
+    f_perfHeader(tblPerf, 2, 0, '3 Meses')
+    f_perfHeader(tblPerf, 3, 0, '6 Meses')
+    f_perfHeader(tblPerf, 4, 0, 'Este Año')
+    f_perfHeader(tblPerf, 5, 0, '1 Año')
+    f_perfCell(tblPerf, 0, 1, f_perf(5))
+    f_perfCell(tblPerf, 1, 1, f_perf(21))
+    f_perfCell(tblPerf, 2, 1, f_perf(63))
+    f_perfCell(tblPerf, 3, 1, f_perf(126))
+    f_perfCell(tblPerf, 4, 1, f_return(close, lastYearClose))
+    f_perfCell(tblPerf, 5, 1, f_perf(251))
 
 
-// Inputs para mostrar u ocultar los indicadores
-showkoncorde = input(true, title='KONCORDE VISIBLE', group = 'Indicadores')
-showrsi = input(true, title='RSI VISIBLE', group = 'Indicadores')
-showmacd = input(true, title='MACD VISIBLE', group = 'Indicadores')
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║          TABLA DE DATOS (Distancia a MAs + RSI + Beta)               ║
+// ╚══════════════════════════════════════════════════════════════════════╝
 
-// Factores de escala para reducir la altura de los indicadores
-scaleKoncorde = 5
-scaleRSI = 1
-scaleMACD = 5
+rsiTabla = ta.rsi(close, rsiLenTabla)
+var table tblDatos = table.new(position.bottom_right, 9, 9, bgcolor=#242424, force_overlay=true)
 
-// Desplazamiento vertical
-deltaKoncorde = -30
-deltaRSI = -70
-deltaMACD = -120
+// --- Cálculo de Beta (para tabla diaria) ---
+betaLen    = 60
+instrument = request.security(syminfo.tickerid, timeframe.period, close)
+benchmark  = request.security('SPY', timeframe.period, close)
+instRet    = f_logReturn(instrument)
+benchRet   = f_logReturn(benchmark)
+avgInst    = ta.sma(instRet, betaLen)
+avgBench   = ta.sma(benchRet, betaLen)
 
-// KONCORDE
-calc_mfi(length) =>
-    100.0 - 100.0 / (1.0 + math.sum(volume * (ta.change(hlc3) <= 0 ? 0 : hlc3), length) / math.sum(volume * (ta.change(hlc3) >= 0 ? 0 : hlc3), length))
+covSum = 0.0
+for i = 0 to betaLen - 1
+    covSum += (instRet[i] - avgInst) * (benchRet[i] - avgBench)
+beta = (covSum / (betaLen - 1)) / ta.variance(benchRet, betaLen)
 
-tprice = ohlc4
-lengthEMA = 255
-m = 15
-pvim = ta.ema(ta.pvi, m)
-pvimax = ta.highest(pvim, 90)
-pvimin = ta.lowest(pvim, 90)
-oscp = (ta.pvi - pvim) * 100 / (pvimax - pvimin)
-nvim = ta.ema(ta.nvi, m)
-nvimax = ta.highest(nvim, 90)
-nvimin = ta.lowest(nvim, 90)
-azul = (ta.nvi - nvim) * 100 / (nvimax - nvimin)
-xmf = calc_mfi(14)
-mult = 2.0
-basis = ta.sma(tprice, 25)
-dev = mult * ta.stdev(tprice, 25)
-upper = basis + dev
-lower = basis - dev
-OB1 = (upper + lower) / 2.0
-OB2 = upper - lower
-BollOsc = (tprice - OB1) / OB2 * 100
-xrsi = ta.rsi(tprice, 14)
-calc_stoch(src, length, smoothFastD) =>
-    ta.sma(100 * (src - ta.lowest(low, length)) / (ta.highest(high, length) - ta.lowest(low, length)), smoothFastD)
+// --- Tabla Diaria ---
+if esD and showTablaD
+    f_tablaFila(tblDatos, 0, tipoD1, lenD1, f_dist(maD1))
+    f_tablaFila(tblDatos, 1, tipoD2, lenD2, f_dist(maD2))
+    f_tablaFila(tblDatos, 2, tipoD3, lenD3, f_dist(maD3))
+    f_tablaFila(tblDatos, 3, tipoD4, lenD4, f_dist(maD4))
+    f_tablaFila(tblDatos, 4, tipoD5, lenD5, f_dist(maD5))
+    table.cell(tblDatos, 6, 0, text='RSI', text_color=color.white, bgcolor=#000000)
+    table.cell(tblDatos, 6, 1, str.tostring(rsiTabla, '#'), text_color=color.white, bgcolor=f_colorRSI(rsiTabla))
+    table.cell(tblDatos, 7, 0, text='β', text_color=color.white, bgcolor=#000000)
+    table.cell(tblDatos, 7, 1, str.tostring(beta, '#.#'), text_color=color.white, bgcolor=#53555d)
+    for c = 0 to 7
+        table.cell(tblDatos, c, 3, text=(c == 3 ? 'By Dylan Argot' : ''), text_color=color.white, bgcolor=#000000)
 
-stoc = calc_stoch(tprice, 21, 3)
-marron = (xrsi + xmf + BollOsc + stoc / 3) / 2
-verde = marron + oscp
-media = ta.ema(marron, m)
+// --- Tabla Semanal ---
+if esS and showTablaS
+    f_tablaFila(tblDatos, 0, tipoS1, lenS1, f_dist(maS1))
+    f_tablaFila(tblDatos, 1, tipoS2, lenS2, f_dist(maS2))
+    f_tablaFila(tblDatos, 2, tipoS3, lenS3, f_dist(maS3))
+    f_tablaFila(tblDatos, 3, tipoS4, lenS4, f_dist(maS4))
+    f_tablaFila(tblDatos, 4, tipoS5, lenS5, f_dist(maS5))
+    f_tablaFila(tblDatos, 5, tipoS6, lenS6, f_dist(maS6))
+    table.cell(tblDatos, 6, 0, text='RSI', text_color=color.white, bgcolor=#000000)
+    table.cell(tblDatos, 6, 1, str.tostring(rsiTabla, '#'), text_color=color.white, bgcolor=f_colorRSI(rsiTabla))
+    for c = 0 to 6
+        table.cell(tblDatos, c, 3, text=(c == 3 ? 'By Dylan Argot' : ''), text_color=color.white, bgcolor=#000000)
 
-vl = plot(showkoncorde ? (verde / scaleKoncorde) + deltaKoncorde : na, color=color.new(#00ff00, 0), style=plot.style_columns, histbase=deltaKoncorde, linewidth=2, title='Manos Chicas')
-ml = plot(showkoncorde ? (marron / scaleKoncorde) + deltaKoncorde : na, color=color.new(#ffb974, 0), style=plot.style_columns, histbase=deltaKoncorde, linewidth=2, title='Montaña')
-al = plot(showkoncorde ? (azul / scaleKoncorde) + deltaKoncorde : na, color=#330072, style=plot.style_columns, histbase=deltaKoncorde, linewidth=2, title='Manos Grandes')
-l1 = plot(showkoncorde ? (marron / scaleKoncorde) + deltaKoncorde : na, color=color.rgb(116, 56, 0), linewidth=2, title='Linea de la Montaña')
-l2 = plot(showkoncorde ? (verde / scaleKoncorde) + deltaKoncorde : na, color=color.new(#008c00, 0), linewidth=2, title='Linea de Manos Chicas')
-l3 = plot(showkoncorde ? (azul / scaleKoncorde) + deltaKoncorde : na, color=color.new(#0095ff, 0), linewidth=2, title='Linea de Manos Grandes')
-l4 = plot(showkoncorde ? (media / scaleKoncorde) + deltaKoncorde : na, color=color.rgb(255, 0, 0), linewidth=2, title='Media Móvil')
-l5 = plot(showkoncorde ? deltaKoncorde : na, color=color.new(color.white, 0), linewidth=1, title='Cero Koncorde')
+// --- Tabla Mensual ---
+if esM and showTablaM
+    f_tablaFila(tblDatos, 0, tipoM1, lenM1, f_dist(maM1))
+    f_tablaFila(tblDatos, 1, tipoM2, lenM2, f_dist(maM2))
+    f_tablaFila(tblDatos, 2, tipoM3, lenM3, f_dist(maM3))
+    f_tablaFila(tblDatos, 3, tipoM4, lenM4, f_dist(maM4))
+    f_tablaFila(tblDatos, 4, tipoM5, lenM5, f_dist(maM5))
+    table.cell(tblDatos, 5, 0, text='RSI', text_color=color.white, bgcolor=#000000)
+    table.cell(tblDatos, 5, 1, str.tostring(rsiTabla, '#'), text_color=color.white, bgcolor=f_colorRSI(rsiTabla))
+    for c = 0 to 5
+        table.cell(tblDatos, c, 3, text=(c == 3 ? 'By Dylan Argot' : ''), text_color=color.white, bgcolor=#000000)
 
-// MACD
-fast_length = input(title='Longitud Media Rápida del MACD', defval=12)
-slow_length = input(title='Longitud Media Lenta del MACD', defval=26)
-src = close
-signal_length = input.int(title='Longitud Suavizado MACD', minval=1, maxval=50, defval=9)
-sma_source = false
-sma_signal = false
 
-col_grow_above = #26A69A
-col_fall_above = #B2DFDB
-col_fall_below = #EF5350
-col_grow_below = #FFCDD2
-col_macd = #0094ff
-col_signal = #ff6a00
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║                          KONCORDE                                    ║
+// ╚══════════════════════════════════════════════════════════════════════╝
 
-fast_ma = sma_source ? ta.sma(src, fast_length) : ta.ema(src, fast_length)
-slow_ma = sma_source ? ta.sma(src, slow_length) : ta.ema(src, slow_length)
-macd = (fast_ma - slow_ma) / slow_ma * 1000
-signal = sma_signal ? ta.sma(macd, signal_length) : ta.ema(macd, signal_length)
-hist = macd - signal
+SCALE_K = 5
+DELTA_K = -30
 
-plot(showmacd ? (hist / scaleMACD) + deltaMACD : na, title='Histograma MACD', style=plot.style_columns, color=hist >= 0 ? hist[1] < hist ? col_grow_above : col_fall_above : hist[1] < hist ? col_grow_below : col_fall_below, histbase=deltaMACD)
-plot(showmacd ? (macd / scaleMACD) + deltaMACD : na, title='MACD', color=color.new(col_macd, 0))
-plot(showmacd ? (signal / scaleMACD) + deltaMACD : na, title='Señal del MACD', color=color.new(col_signal, 0))
-plot(showmacd ? deltaMACD : na, color=color.new(color.white, 0), linewidth=1, title='Cero MACD')
+tprice  = ohlc4
+mKonc   = 15
 
-// RSI
-multip = 2.0
+// PVI / NVI
+pvim_k = ta.ema(ta.pvi, mKonc)
+oscp   = (ta.pvi - pvim_k) * 100 / (ta.highest(pvim_k, 90) - ta.lowest(pvim_k, 90))
+nvim_k = ta.ema(ta.nvi, mKonc)
+azul   = (ta.nvi - nvim_k) * 100 / (ta.highest(nvim_k, 90) - ta.lowest(nvim_k, 90))
 
-hline(showrsi ? 0 + deltaRSI : na, title='Línea Cero', color=color.rgb(255, 255, 255), linestyle=hline.style_dashed, linewidth=1)
-band0 = hline(showrsi ? -10 * multip + deltaRSI : na, title='Línea Sobreventa', color=color.green, linestyle=hline.style_solid)
-band1 = hline(showrsi ? 10 * multip + deltaRSI : na, color=color.red, title='Línea Sobrecompra', linestyle=hline.style_solid)
+// Componentes
+xmf     = f_mfi(14)
+bbBasis = ta.sma(tprice, 25)
+bbDev   = 2.0 * ta.stdev(tprice, 25)
+BollOsc = (tprice - bbBasis) / (2.0 * bbDev) * 100
+xrsi_k  = ta.rsi(tprice, 14)
+stoc    = ta.sma(100 * (tprice - ta.lowest(low, 21)) / (ta.highest(high, 21) - ta.lowest(low, 21)), 3)
 
-lengthRSI = input.int(9, minval=1, title='Longitud del RSI')
+// Señales
+marron = (xrsi_k + xmf + BollOsc + stoc / 3) / 2
+verde  = marron + oscp
+mediaK = ta.ema(marron, mKonc)
 
-// 1) RSI crudo y transformado
-rsiRaw  = ta.rsi(close, lengthRSI)
-RSIMain = (rsiRaw - 50) / scaleRSI
+// Plots Koncorde
+plot(showKoncorde ? verde  / SCALE_K + DELTA_K : na, color=color.new(#00ff00, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Chicas')
+plot(showKoncorde ? marron / SCALE_K + DELTA_K : na, color=color.new(#ffb974, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Montaña')
+plot(showKoncorde ? azul   / SCALE_K + DELTA_K : na, color=#330072, style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Grandes')
+plot(showKoncorde ? marron / SCALE_K + DELTA_K : na, color=color.rgb(116, 56, 0), linewidth=2, title='Línea Montaña')
+plot(showKoncorde ? verde  / SCALE_K + DELTA_K : na, color=color.new(#008c00, 0), linewidth=2, title='Línea Manos Chicas')
+plot(showKoncorde ? azul   / SCALE_K + DELTA_K : na, color=color.new(#0095ff, 0), linewidth=2, title='Línea Manos Grandes')
+plot(showKoncorde ? mediaK / SCALE_K + DELTA_K : na, color=color.rgb(255, 0, 0), linewidth=2, title='Media Móvil Koncorde')
+plot(showKoncorde ? DELTA_K : na, color=color.new(color.white, 0), linewidth=1, title='Cero Koncorde')
 
-// 2) MA sobre el RSI crudo
-rsiMA_length = input.int(21, title='Media RSI')
-rsiMaRaw = ta.ema(rsiRaw, rsiMA_length)
-RSI_MA  = (rsiMaRaw - 50) / scaleRSI
 
-// Plots
-rsiPlot = plot(
-    showrsi ? RSIMain + deltaRSI : na,
-    title='RSI',
-    color=color.rgb(120, 12, 139),
-    linewidth=2
-)
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║                            MACD                                      ║
+// ╚══════════════════════════════════════════════════════════════════════╝
 
-color_rsi_ma = RSI_MA > RSI_MA[1] ? color.lime : color.red
+SCALE_MACD = 5
+DELTA_MACD = -120
 
-maPlot = plot(
-    showrsi ? RSI_MA + deltaRSI : na,
-    title='Media RSI 21',
-    color=color_rsi_ma,
-    linewidth=2
-)
+COL_GROW_UP = #26A69A
+COL_FALL_UP = #B2DFDB
+COL_FALL_DN = #EF5350
+COL_GROW_DN = #FFCDD2
+COL_MACD    = #0094ff
+COL_SIGNAL  = #ff6a00
 
-// 3) relleno entre RSI y MA
-fill(
-    rsiPlot,
-    maPlot,
-    color = showrsi ? (RSIMain >= RSI_MA ? color.new(color.lime, 85) : color.new(color.red, 85)) : na,
-    title = 'Relleno RSI vs MA'
-)
+macdFast   = ta.ema(close, macdFastLen)
+macdSlow   = ta.ema(close, macdSlowLen)
+macdLine   = (macdFast - macdSlow) / macdSlow * 1000
+signalLine = ta.ema(macdLine, macdSignalLen)
+macdHist   = macdLine - signalLine
 
-// Fondo de bandas
-fill(band1, band0, color=color.new(#9915FF, 90), title='Background')
+histColor = macdHist >= 0 ? (macdHist[1] < macdHist ? COL_GROW_UP : COL_FALL_UP) : (macdHist[1] < macdHist ? COL_GROW_DN : COL_FALL_DN)
+
+plot(showMACD ? macdHist   / SCALE_MACD + DELTA_MACD : na, title='Histograma MACD', style=plot.style_columns, color=histColor, histbase=DELTA_MACD)
+plot(showMACD ? macdLine   / SCALE_MACD + DELTA_MACD : na, title='MACD', color=color.new(COL_MACD, 0))
+plot(showMACD ? signalLine / SCALE_MACD + DELTA_MACD : na, title='Señal MACD', color=color.new(COL_SIGNAL, 0))
+plot(showMACD ? DELTA_MACD : na, color=color.new(color.white, 0), linewidth=1, title='Cero MACD')
+
+
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║                             RSI                                    ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+
+SCALE_RSI = 1
+DELTA_RSI = -70
+MULTI_RSI = 2.0
+
+hline(showRSI ? DELTA_RSI : na, title='Línea Cero RSI', color=color.rgb(255, 255, 255), linestyle=hline.style_dashed, linewidth=1)
+bandSobreventa  = hline(showRSI ? -10 * MULTI_RSI + DELTA_RSI : na, title='Línea Sobreventa', color=color.green, linestyle=hline.style_solid)
+bandSobrecompra = hline(showRSI ? 10 * MULTI_RSI + DELTA_RSI : na, title='Línea Sobrecompra', color=color.red, linestyle=hline.style_solid)
+
+rsiRaw   = ta.rsi(close, rsiLenPlot)
+RSIMain  = (rsiRaw - 50) / SCALE_RSI
+rsiMaRaw = ta.ema(rsiRaw, rsiMALen)
+RSI_MA   = (rsiMaRaw - 50) / SCALE_RSI
+
+rsiPlot = plot(showRSI ? RSIMain + DELTA_RSI : na, title='RSI', color=color.rgb(120, 12, 139), linewidth=2)
+colorMA = RSI_MA > RSI_MA[1] ? color.lime : color.red
+maPlot  = plot(showRSI ? RSI_MA + DELTA_RSI : na, title='Media RSI', color=colorMA, linewidth=2)
+
+fill(rsiPlot, maPlot, color=showRSI ? (RSIMain >= RSI_MA ? color.new(color.lime, 85) : color.new(color.red, 85)) : na, title='Relleno RSI vs MA')
+fill(bandSobrecompra, bandSobreventa, color=color.new(#9915FF, 90), title='Fondo RSI')
