@@ -455,7 +455,7 @@ plot(showMACD ? DELTA_MACD : na, color=color.new(color.white, 0), linewidth=1, t
 
 
 // ╔══════════════════════════════════════════════════════════════════════╗
-// ║                             RSI                                    ║
+// ║                             RSI                                      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
 SCALE_RSI = 1
@@ -477,3 +477,16 @@ maPlot  = plot(showRSI ? RSI_MA + DELTA_RSI : na, title='Media RSI', color=color
 
 fill(rsiPlot, maPlot, color=showRSI ? (RSIMain >= RSI_MA ? color.new(color.lime, 85) : color.new(color.red, 85)) : na, title='Relleno RSI vs MA')
 fill(bandSobrecompra, bandSobreventa, color=color.new(#9915FF, 90), title='Fondo RSI')
+
+// Mínimo histórico del RSI (por papel)
+rsiPlotVal = RSIMain + DELTA_RSI
+
+var float rsiHistMin = na
+if not na(rsiPlotVal)
+    rsiHistMin := na(rsiHistMin) ? rsiPlotVal : math.min(rsiHistMin, rsiPlotVal)
+
+var line rsiMinLine = na
+if barstate.islast and showRSI
+    if not na(rsiMinLine)
+        line.delete(rsiMinLine)
+    rsiMinLine := line.new(bar_index - 1, rsiHistMin, bar_index, rsiHistMin, extend=extend.both, color=color.new(#00bcd4, 0), style=line.style_dashed, width=3)
