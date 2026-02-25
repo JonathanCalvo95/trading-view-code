@@ -462,20 +462,26 @@ SCALE_RSI = 1
 DELTA_RSI = -70
 MULTI_RSI = 2.0
 
-hline(showRSI ? DELTA_RSI : na, title='Línea Cero RSI', color=color.rgb(255, 255, 255), linestyle=hline.style_dashed, linewidth=1)
-bandSobreventa  = hline(showRSI ? -10 * MULTI_RSI + DELTA_RSI : na, title='Línea Sobreventa', color=color.green, linestyle=hline.style_solid)
-bandSobrecompra = hline(showRSI ? 10 * MULTI_RSI + DELTA_RSI : na, title='Línea Sobrecompra', color=color.red, linestyle=hline.style_solid)
+hline(showRSI ? DELTA_RSI : na, title='Línea Cero RSI', color=color.rgb(128, 128, 128), linestyle=hline.style_dashed, linewidth=1)
+bandSobreventa  = hline(showRSI ? -10 * MULTI_RSI + DELTA_RSI : na, title='Línea Sobreventa', color=color.green, linestyle=hline.style_dotted)
+bandSobrecompra = hline(showRSI ? 10 * MULTI_RSI + DELTA_RSI : na, title='Línea Sobrecompra', color=color.red, linestyle=hline.style_dotted)
 
 rsiRaw   = ta.rsi(close, rsiLenPlot)
 RSIMain  = (rsiRaw - 50) / SCALE_RSI
-rsiMaRaw = ta.ema(rsiRaw, rsiMALen)
+rsiMaRaw = ta.sma(rsiRaw, rsiMALen)
 RSI_MA   = (rsiMaRaw - 50) / SCALE_RSI
 
 rsiPlot = plot(showRSI ? RSIMain + DELTA_RSI : na, title='RSI', color=color.rgb(120, 12, 139), linewidth=2)
-colorMA = RSI_MA > RSI_MA[1] ? color.lime : color.red
-maPlot  = plot(showRSI ? RSI_MA + DELTA_RSI : na, title='Media RSI', color=colorMA, linewidth=2)
+maPlot  = plot(showRSI ? RSI_MA + DELTA_RSI : na, title='Media RSI', color=color.yellow, linewidth=2)
 
-fill(rsiPlot, maPlot, color=showRSI ? (RSIMain >= RSI_MA ? color.new(color.lime, 85) : color.new(color.red, 85)) : na, title='Relleno RSI vs MA')
+// Gradiente de relleno: intensidad proporcional a distancia del RSI respecto a 50
+rsiDiff         = RSIMain - RSI_MA
+rsiBearIntensity = math.max(0.0, (50 - rsiRaw) / 50)  // 0 en RSI=50, 1 en RSI=0
+rsiBullIntensity = math.max(0.0, (rsiRaw - 50) / 50)  // 0 en RSI=50, 1 en RSI=100
+fillTransBear    = math.round(85 - rsiBearIntensity * 65)  // de 85 (tenue) a 20 (intenso) al caer
+fillTransBull    = math.round(85 - rsiBullIntensity * 65)  // de 85 (tenue) a 20 (intenso) al subir
+fillColor        = RSIMain >= RSI_MA ? color.new(#00bfa5, fillTransBull) : color.new(#ff1744, fillTransBear)
+fill(rsiPlot, maPlot, color=showRSI ? fillColor : na, title='Relleno RSI vs MA')
 fill(bandSobrecompra, bandSobreventa, color=color.new(#9915FF, 90), title='Fondo RSI')
 
 // Mínimo histórico del RSI (por papel)
