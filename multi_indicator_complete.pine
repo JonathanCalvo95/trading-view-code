@@ -107,6 +107,11 @@ tipoM5 = input.string('EMA', title='Media 5', inline='e', group=GRP_M, options=[
 lenM5  = input.int(200, 'De', inline='e', group=GRP_M)
 colM5  = input.color(color.red,    'Color', inline='e', group=GRP_M)
 
+showM6 = input.bool(true, title='', group=GRP_M, inline='f')
+tipoM6 = input.string('SMA', title='Media 6', inline='f', group=GRP_M, options=['SMA','EMA','WMA','RMA'])
+lenM6  = input.int(200, 'De', inline='f', group=GRP_M)
+colM6  = input.color(color.purple, 'Color', inline='f', group=GRP_M)
+
 // --- RSI ---
 GRP_RSI = 'RSI'
 rsiLenTabla = input.int(14, title='Longitud RSI (Tabla)', group=GRP_RSI)
@@ -213,6 +218,7 @@ maM2 = esM ? f_ma(close, lenM2, tipoM2) : na
 maM3 = esM ? f_ma(close, lenM3, tipoM3) : na
 maM4 = esM ? f_ma(close, lenM4, tipoM4) : na
 maM5 = esM ? f_ma(close, lenM5, tipoM5) : na
+maM6 = esM ? f_ma(close, lenM6, tipoM6) : na
 
 
 // ╔══════════════════════════════════════════════════════════════════════╗
@@ -285,6 +291,7 @@ plot(showM2 and esM ? maM2 : na, title='MA 2 Mensual', color=colM2, linewidth=1,
 plot(showM3 and esM ? maM3 : na, title='MA 3 Mensual', color=colM3, linewidth=1, force_overlay=true)
 plot(showM4 and esM ? maM4 : na, title='MA 4 Mensual', color=colM4, linewidth=1, force_overlay=true)
 plot(showM5 and esM ? maM5 : na, title='MA 5 Mensual', color=colM5, linewidth=1, force_overlay=true)
+plot(showM6 and esM ? maM6 : na, title='MA 6 Mensual (SMA 200)', color=colM6, linewidth=1, force_overlay=true)
 
 if showM1
     lblM1 = label.new(time + barOffset, maM1, xloc=xloc.bar_time, text=tipoM1 + ' ' + str.tostring(lenM1), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colM1, force_overlay=true)
@@ -301,6 +308,9 @@ if showM4
 if showM5
     lblM5 = label.new(time + barOffset, maM5 - maM5 * 0.001, xloc=xloc.bar_time, text=tipoM5 + ' ' + str.tostring(lenM5), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colM5, force_overlay=true)
     label.delete(lblM5[1])
+if showM6
+    lblM6 = label.new(time + barOffset, maM6 - maM6 * 0.001, xloc=xloc.bar_time, text=tipoM6 + ' ' + str.tostring(lenM6), color=color.new(color.red, 100), style=label.style_label_lower_left, size=size.normal, textcolor=colM6, force_overlay=true)
+    label.delete(lblM6[1])
 
 
 // ╔══════════════════════════════════════════════════════════════════════╗
@@ -380,9 +390,10 @@ if esM and showTablaM
     f_tablaFila(tblDatos, 2, tipoM3, lenM3, f_dist(maM3))
     f_tablaFila(tblDatos, 3, tipoM4, lenM4, f_dist(maM4))
     f_tablaFila(tblDatos, 4, tipoM5, lenM5, f_dist(maM5))
-    table.cell(tblDatos, 5, 0, text='RSI', text_color=color.white, bgcolor=#000000)
-    table.cell(tblDatos, 5, 1, str.tostring(rsiTabla, '#'), text_color=color.white, bgcolor=f_colorRSI(rsiTabla))
-    for c = 0 to 5
+    f_tablaFila(tblDatos, 5, tipoM6, lenM6, f_dist(maM6))
+    table.cell(tblDatos, 6, 0, text='RSI', text_color=color.white, bgcolor=#000000)
+    table.cell(tblDatos, 6, 1, str.tostring(rsiTabla, '#'), text_color=color.white, bgcolor=f_colorRSI(rsiTabla))
+    for c = 0 to 6
         table.cell(tblDatos, c, 3, text=(c == 3 ? 'By Dylan Argot' : ''), text_color=color.white, bgcolor=#000000)
 
 
