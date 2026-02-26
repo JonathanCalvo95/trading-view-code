@@ -390,8 +390,9 @@ if esM and showTablaM
 // ║                          KONCORDE                                    ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
-SCALE_K = 5
-DELTA_K = -30
+SCALE_K = esD ? 4.0 : esS ? 6.0 : 9.0
+DELTA_K = -15
+OFFSET_K = esD ? 5.0 : esS ? 0.0 : -3.0
 
 tprice  = ohlc4
 mKonc   = 15
@@ -416,22 +417,23 @@ verde  = marron + oscp
 mediaK = ta.ema(marron, mKonc)
 
 // Plots Koncorde
-plot(showKoncorde ? verde  / SCALE_K + DELTA_K : na, color=color.new(#00ff00, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Chicas')
-plot(showKoncorde ? marron / SCALE_K + DELTA_K : na, color=color.new(#ffb974, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Montaña')
-plot(showKoncorde ? azul   / SCALE_K + DELTA_K : na, color=#330072, style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Grandes')
-plot(showKoncorde ? marron / SCALE_K + DELTA_K : na, color=color.rgb(116, 56, 0), linewidth=2, title='Línea Montaña')
-plot(showKoncorde ? verde  / SCALE_K + DELTA_K : na, color=color.new(#008c00, 0), linewidth=2, title='Línea Manos Chicas')
-plot(showKoncorde ? azul   / SCALE_K + DELTA_K : na, color=color.new(#0095ff, 0), linewidth=2, title='Línea Manos Grandes')
-plot(showKoncorde ? mediaK / SCALE_K + DELTA_K : na, color=color.rgb(255, 0, 0), linewidth=2, title='Media Móvil Koncorde')
-plot(showKoncorde ? DELTA_K : na, color=color.new(color.white, 0), linewidth=1, title='Cero Koncorde')
+plot(showKoncorde ? verde  / SCALE_K + DELTA_K + OFFSET_K : na, color=color.new(#00ff00, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Chicas')
+plot(showKoncorde ? marron / SCALE_K + DELTA_K + OFFSET_K : na, color=color.new(#ffb974, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Montaña')
+plot(showKoncorde ? azul   / SCALE_K + DELTA_K + OFFSET_K : na, color=#330072, style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Grandes')
+plot(showKoncorde ? marron / SCALE_K + DELTA_K + OFFSET_K : na, color=color.rgb(116, 56, 0), linewidth=2, title='Línea Montaña')
+plot(showKoncorde ? verde  / SCALE_K + DELTA_K + OFFSET_K : na, color=color.new(#008c00, 0), linewidth=2, title='Línea Manos Chicas')
+plot(showKoncorde ? azul   / SCALE_K + DELTA_K + OFFSET_K : na, color=color.new(#0095ff, 0), linewidth=2, title='Línea Manos Grandes')
+plot(showKoncorde ? mediaK / SCALE_K + DELTA_K + OFFSET_K : na, color=color.rgb(255, 0, 0), linewidth=2, title='Media Móvil Koncorde')
+plot(showKoncorde ? float(DELTA_K) + OFFSET_K : na, color=color.new(color.white, 0), linewidth=1, title='Cero Koncorde')
 
 
 // ╔══════════════════════════════════════════════════════════════════════╗
 // ║                            MACD                                      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
-SCALE_MACD = 5
-DELTA_MACD = -120
+SCALE_MACD = esD ? 5.0 : esS ? 8.0 : 12.0
+DELTA_MACD = -125
+OFFSET_MACD = esD ? -10.0 : esS ? 0.0 : 5.0
 
 COL_GROW_UP = #26A69A
 COL_FALL_UP = #B2DFDB
@@ -448,19 +450,19 @@ macdHist   = macdLine - signalLine
 
 histColor = macdHist >= 0 ? (macdHist[1] < macdHist ? COL_GROW_UP : COL_FALL_UP) : (macdHist[1] < macdHist ? COL_GROW_DN : COL_FALL_DN)
 
-plot(showMACD ? macdHist   / SCALE_MACD + DELTA_MACD : na, title='Histograma MACD', style=plot.style_columns, color=histColor, histbase=DELTA_MACD)
-plot(showMACD ? macdLine   / SCALE_MACD + DELTA_MACD : na, title='MACD', color=color.new(COL_MACD, 0))
-plot(showMACD ? signalLine / SCALE_MACD + DELTA_MACD : na, title='Señal MACD', color=color.new(COL_SIGNAL, 0))
-plot(showMACD ? DELTA_MACD : na, color=color.new(color.white, 0), linewidth=1, title='Cero MACD')
+plot(showMACD ? macdHist   / SCALE_MACD + DELTA_MACD + OFFSET_MACD : na, title='Histograma MACD', style=plot.style_columns, color=histColor, histbase=DELTA_MACD)
+plot(showMACD ? macdLine   / SCALE_MACD + DELTA_MACD + OFFSET_MACD : na, title='MACD', color=color.new(COL_MACD, 0))
+plot(showMACD ? signalLine / SCALE_MACD + DELTA_MACD + OFFSET_MACD : na, title='Señal MACD', color=color.new(COL_SIGNAL, 0))
+plot(showMACD ? float(DELTA_MACD) + OFFSET_MACD : na, color=color.new(color.white, 0), linewidth=1, title='Cero MACD')
 
 
 // ╔══════════════════════════════════════════════════════════════════════╗
 // ║                             RSI                                      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
-SCALE_RSI = 1
-DELTA_RSI = -70
-MULTI_RSI = 2.0
+SCALE_RSI = esD ? 1.0 : esS ? 1.8 : 2.5
+DELTA_RSI = -65
+MULTI_RSI = 1.5
 
 hline(showRSI ? DELTA_RSI : na, title='Línea Cero RSI', color=color.rgb(128, 128, 128), linestyle=hline.style_dashed, linewidth=1)
 bandSobreventa  = hline(showRSI ? -10 * MULTI_RSI + DELTA_RSI : na, title='Línea Sobreventa', color=color.green, linestyle=hline.style_dotted)
@@ -484,15 +486,21 @@ fillColor        = RSIMain >= RSI_MA ? color.new(#00bfa5, fillTransBull) : color
 fill(rsiPlot, maPlot, color=showRSI ? fillColor : na, title='Relleno RSI vs MA')
 fill(bandSobrecompra, bandSobreventa, color=color.new(#9915FF, 90), title='Fondo RSI')
 
-// Mínimo histórico del RSI (por papel)
+// Mínimo y Máximo histórico del RSI (por papel)
 rsiPlotVal = RSIMain + DELTA_RSI
 
 var float rsiHistMin = na
+var float rsiHistMax = na
 if not na(rsiPlotVal)
     rsiHistMin := na(rsiHistMin) ? rsiPlotVal : math.min(rsiHistMin, rsiPlotVal)
+    rsiHistMax := na(rsiHistMax) ? rsiPlotVal : math.max(rsiHistMax, rsiPlotVal)
 
 var line rsiMinLine = na
+var line rsiMaxLine = na
 if barstate.islast and showRSI
     if not na(rsiMinLine)
         line.delete(rsiMinLine)
-    rsiMinLine := line.new(bar_index - 1, rsiHistMin, bar_index, rsiHistMin, extend=extend.both, color=color.new(#00bcd4, 0), style=line.style_dashed, width=3)
+    rsiMinLine := line.new(bar_index - 1, rsiHistMin, bar_index, rsiHistMin, extend=extend.both, color=color.rgb(128, 128, 128), style=line.style_dotted, width=1)
+    if not na(rsiMaxLine)
+        line.delete(rsiMaxLine)
+    rsiMaxLine := line.new(bar_index - 1, rsiHistMax, bar_index, rsiHistMax, extend=extend.both, color=color.rgb(128, 128, 128), style=line.style_dotted, width=1)
