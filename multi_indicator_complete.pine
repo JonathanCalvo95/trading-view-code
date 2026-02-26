@@ -390,9 +390,8 @@ if esM and showTablaM
 // ║                          KONCORDE                                    ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
-SCALE_K = esD ? 4.0 : esS ? 6.0 : 9.0
+SCALE_K = esD ? 3.0 : esS ? 6.0 : 9.0
 DELTA_K = -15
-OFFSET_K = esD ? 5.0 : esS ? 0.0 : -3.0
 
 tprice  = ohlc4
 mKonc   = 15
@@ -417,23 +416,22 @@ verde  = marron + oscp
 mediaK = ta.ema(marron, mKonc)
 
 // Plots Koncorde
-plot(showKoncorde ? verde  / SCALE_K + DELTA_K + OFFSET_K : na, color=color.new(#00ff00, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Chicas')
-plot(showKoncorde ? marron / SCALE_K + DELTA_K + OFFSET_K : na, color=color.new(#ffb974, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Montaña')
-plot(showKoncorde ? azul   / SCALE_K + DELTA_K + OFFSET_K : na, color=#330072, style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Grandes')
-plot(showKoncorde ? marron / SCALE_K + DELTA_K + OFFSET_K : na, color=color.rgb(116, 56, 0), linewidth=2, title='Línea Montaña')
-plot(showKoncorde ? verde  / SCALE_K + DELTA_K + OFFSET_K : na, color=color.new(#008c00, 0), linewidth=2, title='Línea Manos Chicas')
-plot(showKoncorde ? azul   / SCALE_K + DELTA_K + OFFSET_K : na, color=color.new(#0095ff, 0), linewidth=2, title='Línea Manos Grandes')
-plot(showKoncorde ? mediaK / SCALE_K + DELTA_K + OFFSET_K : na, color=color.rgb(255, 0, 0), linewidth=2, title='Media Móvil Koncorde')
-plot(showKoncorde ? float(DELTA_K) + OFFSET_K : na, color=color.new(color.white, 0), linewidth=1, title='Cero Koncorde')
+plot(showKoncorde ? verde  / SCALE_K + DELTA_K : na, color=color.new(#00ff00, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Chicas')
+plot(showKoncorde ? marron / SCALE_K + DELTA_K : na, color=color.new(#ffb974, 0), style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Montaña')
+plot(showKoncorde ? azul   / SCALE_K + DELTA_K : na, color=#330072, style=plot.style_columns, histbase=DELTA_K, linewidth=2, title='Manos Grandes')
+plot(showKoncorde ? marron / SCALE_K + DELTA_K : na, color=color.rgb(116, 56, 0), linewidth=2, title='Línea Montaña')
+plot(showKoncorde ? verde  / SCALE_K + DELTA_K : na, color=color.new(#008c00, 0), linewidth=2, title='Línea Manos Chicas')
+plot(showKoncorde ? azul   / SCALE_K + DELTA_K : na, color=color.new(#0095ff, 0), linewidth=2, title='Línea Manos Grandes')
+plot(showKoncorde ? mediaK / SCALE_K + DELTA_K : na, color=color.rgb(255, 0, 0), linewidth=2, title='Media Móvil Koncorde')
+plot(showKoncorde ? float(DELTA_K) : na, color=color.new(color.white, 0), linewidth=1, title='Cero Koncorde')
 
 
 // ╔══════════════════════════════════════════════════════════════════════╗
 // ║                            MACD                                      ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
-SCALE_MACD = esD ? 5.0 : esS ? 8.0 : 12.0
+SCALE_MACD = esD ? 3.5 : esS ? 8.0 : 12.0
 DELTA_MACD = -125
-OFFSET_MACD = esD ? -10.0 : esS ? 0.0 : 5.0
 
 COL_GROW_UP = #26A69A
 COL_FALL_UP = #B2DFDB
@@ -450,10 +448,10 @@ macdHist   = macdLine - signalLine
 
 histColor = macdHist >= 0 ? (macdHist[1] < macdHist ? COL_GROW_UP : COL_FALL_UP) : (macdHist[1] < macdHist ? COL_GROW_DN : COL_FALL_DN)
 
-plot(showMACD ? macdHist   / SCALE_MACD + DELTA_MACD + OFFSET_MACD : na, title='Histograma MACD', style=plot.style_columns, color=histColor, histbase=DELTA_MACD)
-plot(showMACD ? macdLine   / SCALE_MACD + DELTA_MACD + OFFSET_MACD : na, title='MACD', color=color.new(COL_MACD, 0))
-plot(showMACD ? signalLine / SCALE_MACD + DELTA_MACD + OFFSET_MACD : na, title='Señal MACD', color=color.new(COL_SIGNAL, 0))
-plot(showMACD ? float(DELTA_MACD) + OFFSET_MACD : na, color=color.new(color.white, 0), linewidth=1, title='Cero MACD')
+plot(showMACD ? macdHist   / SCALE_MACD + DELTA_MACD : na, title='Histograma MACD', style=plot.style_columns, color=histColor, histbase=DELTA_MACD)
+plot(showMACD ? macdLine   / SCALE_MACD + DELTA_MACD : na, title='MACD', color=color.new(COL_MACD, 0))
+plot(showMACD ? signalLine / SCALE_MACD + DELTA_MACD : na, title='Señal MACD', color=color.new(COL_SIGNAL, 0))
+plot(showMACD ? float(DELTA_MACD) : na, color=color.new(color.white, 0), linewidth=1, title='Cero MACD')
 
 
 // ╔══════════════════════════════════════════════════════════════════════╗
